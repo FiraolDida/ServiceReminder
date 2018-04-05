@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,7 +22,7 @@ import java.util.List;
 public class NameList extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener{
 
     private RecyclerView recyclerView;
-    private TextView emptyText;
+    private TextView emptyText2;
     public RecyclerView.Adapter adapter;
     private List<String> listItems;
     private MyDBHandler myDBHandler;
@@ -33,6 +34,7 @@ public class NameList extends AppCompatActivity implements SwipeRefreshLayout.On
         setContentView(R.layout.activity_name_list);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        emptyText2 = (TextView) findViewById(R.id.emptyText2);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
@@ -80,8 +82,8 @@ public class NameList extends AppCompatActivity implements SwipeRefreshLayout.On
                 arrayList.add(listItem);
             }
 
-            //emptyText.setVisibility(View.GONE);
-            //recyclerView.setVisibility(View.VISIBLE);
+            emptyText2.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
         }
 
 

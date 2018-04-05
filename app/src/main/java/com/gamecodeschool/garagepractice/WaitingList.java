@@ -17,7 +17,7 @@ import java.util.List;
 public class WaitingList extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener{
 
     private RecyclerView recyclerView2;
-    private TextView emptyText2;
+    private TextView emptyText;
     public RecyclerView.Adapter adapter;
     private List<String> listItems;
     private MyDBHandler myDBHandler;
@@ -29,6 +29,7 @@ public class WaitingList extends AppCompatActivity implements SwipeRefreshLayout
         setContentView(R.layout.activity_waiting_list);
 
         recyclerView2 = (RecyclerView) findViewById(R.id.recyclerView2);
+        emptyText = (TextView) findViewById(R.id.emptyText);
         recyclerView2.setHasFixedSize(true);
         recyclerView2.setLayoutManager(new LinearLayoutManager(this));
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_name_list);
@@ -70,8 +71,8 @@ public class WaitingList extends AppCompatActivity implements SwipeRefreshLayout
                 listItem.set_plateNumber(cursor.getString(7));
                 arrayList.add(listItem);
             }
-//            emptyText2.setVisibility(View.GONE);
-//            recyclerView2.setVisibility(View.VISIBLE);
+            emptyText.setVisibility(View.GONE);
+            recyclerView2.setVisibility(View.VISIBLE);
         }
 
 
