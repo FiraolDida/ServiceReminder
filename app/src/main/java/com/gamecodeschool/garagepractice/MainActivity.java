@@ -61,13 +61,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
-        //int id=item.getItemId();
-//        LayoutInflater layoutInflater = LayoutInflater.from(getApplicationContext());
-//        View view = layoutInflater.inflate(R.layout.about, null);
-//        relativeLayout.addView(view);
         Intent intent = new Intent(this, About.class);
         startActivity(intent);
-        Toast.makeText(this, "WORKING WELL", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "WORKING WELL", Toast.LENGTH_SHORT).show();
         return super.onOptionsItemSelected(item);
     }
 
@@ -124,21 +120,49 @@ public class MainActivity extends AppCompatActivity {
     public void handleAdd(View v){
         String name = contactName.getText().toString();
         String p_Number = plateNumber.getText().toString();
+        int phone = 0;
+        int _km = 0;
+        int km = 0;
 
         if(contactName.length() !=0 && contactNumber.length() !=0 && kilometer.length() !=0 && plateNumber.length() !=0){
-            int phone = Integer.parseInt(contactNumber.getText().toString());
-            int _km = Integer.parseInt(kilometer.getText().toString());
-            int km = addOnKilometer(_km);
-            addData(name, phone, km, p_Number);
+            if (contactNumber.length() == 10){
+                if (kilometer.length() <= 6){
+                    phone = Integer.parseInt(contactNumber.getText().toString());
+                    _km = Integer.parseInt(kilometer.getText().toString());
+                    km = addOnKilometer(_km);
+                    if (km < 1000000){
+                        checkInDatabase(name, phone, km, p_Number);
+                    }else {
+                        Toast.makeText(MainActivity.this, "Kilometer exceed maximum number", Toast.LENGTH_LONG).show();
+                    }
+                }
+                else {
+                    kilometer.setError("Exceed maximum number");
+                    Toast.makeText(MainActivity.this, "Exceed maximum number", Toast.LENGTH_LONG).show();
+                }
+            }
+            else {
+                contactNumber.setError("Invalid format");
+                Toast.makeText(MainActivity.this, "Invalid phone number", Toast.LENGTH_LONG).show();
+            }
+
         }else {
-            Toast.makeText(MainActivity.this, "Please fill the field!", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "Please fill in all the field!", Toast.LENGTH_LONG).show();
         }
+    }
 
-        contactName.setText("");
-        contactNumber.setText("");
-        kilometer.setText("");
-        plateNumber.setText("");
-
+    private void checkInDatabase(String name, int phone, int km, String _plateNumber) {
+        boolean status = myDBHandler.checkForExistance(name, phone);
+        if (status){
+            contactName.setText("");
+            contactNumber.setText("");
+            kilometer.setText("");
+            plateNumber.setText("");
+            Toast.makeText(this, "The content you are adding already exists in the Database", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            addData(name, phone, km, _plateNumber);
+        }
     }
 
     public int addOnKilometer(int num){
@@ -146,8 +170,9 @@ public class MainActivity extends AppCompatActivity {
         return kilo_M;
     }
 
-    public void addData(String name, int phone, int km, String plateNumber){
-        String desc = "Dear " + name + ", it's your car service time. Plate number: " + plateNumber + ", Kilometer: " + km + ".\nThank you, Daniel Garage";
+    public void addData(String name, int phone, int km, String _plateNumber){
+        boolean insertData;
+        String desc = "Dear " + name + ", it's your car service time. Plate number: " + _plateNumber + ", Kilometer: " + km + ".\nThank you, Daniel Garage";
         calendar = Calendar.getInstance();
         calendar.add(Calendar.MONTH, 3);
         int time = calendar.get(Calendar.DAY_OF_MONTH);
@@ -157,13 +182,18 @@ public class MainActivity extends AppCompatActivity {
 
         Log.i("TEST", "date: " + time + "month: " + f_month);
 
-        boolean insertData = myDBHandler.addData(name, phone, desc, time, f_month, km, plateNumber);
-
-        if (insertData == true){
-            Toast.makeText(MainActivity.this, "Successfully entered", Toast.LENGTH_LONG).show();
-            helperfunction();
-        }else {
-            Toast.makeText(MainActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
+        try{
+            insertData = myDBHandler.addData(name, phone, desc, time, f_month, km, _plateNumber);
+            if (insertData) {
+                Toast.makeText(MainActivity.this, "Successfully entered", Toast.LENGTH_LONG).show();
+                contactName.setText("");
+                contactNumber.setText("");
+                kilometer.setText("");
+                plateNumber.setText("");
+                helperfunction();
+            }
+        }catch (Exception e){
+            Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
         }
     }
 

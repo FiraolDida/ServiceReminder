@@ -29,6 +29,7 @@
         android:ems="10"
         android:hint="@string/number"
         android:inputType="number"
+        android:maxLength="10"
         android:textAlignment="center" />
 
     <Button
@@ -55,9 +56,10 @@
         android:id="@+id/listButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/contactButton"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="20dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="31dp"
+        android:layout_marginEnd="52dp"
         android:onClick="handleShowList"
         android:text="@string/show_list2" />
 
@@ -70,6 +72,7 @@
         android:ems="10"
         android:hint="@string/kilometer"
         android:inputType="number"
+        android:maxLength="6"
         android:textAlignment="center" />
 
     <EditText

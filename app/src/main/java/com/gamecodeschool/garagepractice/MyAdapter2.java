@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -61,7 +62,7 @@ public class MyAdapter2 extends RecyclerView.Adapter<MyAdapter2.ViewHolder> {
                 int phone = listItem.get_phone();
                 int id = findId(name, phone);
                 String plateNumber = listItem.get_plateNumber();
-                Toast.makeText(context, name, Toast.LENGTH_LONG).show();
+                //Toast.makeText(context, name, Toast.LENGTH_LONG).show();
                 createDialog(view, name, id, plateNumber, position);
                 return true;
             }
@@ -94,7 +95,7 @@ public class MyAdapter2 extends RecyclerView.Adapter<MyAdapter2.ViewHolder> {
                     notifyDataSetChanged();
                 }
                 else {
-                    Toast.makeText(context, "DELETED " , Toast.LENGTH_LONG).show();
+                    //Toast.makeText(context, "DELETED " , Toast.LENGTH_LONG).show();
                     myDBHandler.deleteName(id);
                     listItems.remove(position);
                     notifyDataSetChanged();
@@ -133,6 +134,7 @@ public class MyAdapter2 extends RecyclerView.Adapter<MyAdapter2.ViewHolder> {
         final EditText input = new EditText(this.context);
 
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(6)});
         builder.setView(input);
         // Set up the buttons
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener(){
@@ -140,12 +142,16 @@ public class MyAdapter2 extends RecyclerView.Adapter<MyAdapter2.ViewHolder> {
             public void onClick(DialogInterface dialog, int which) {
                 km = Integer.parseInt(input.getText().toString());
                 int _km = km + 5000;
-                Toast.makeText(context, "km: " + _km, Toast.LENGTH_SHORT).show();
-                myDBHandler.updateKilometer(id, _km);
-                updateTime(id);
-                updateDesc(id, name, plateNumber, _km);
-                Log.i("TIME", "TIME: UPDATED");
-                notifyDataSetChanged();
+                if (_km < 1000000){
+                    myDBHandler.updateKilometer(id, _km);
+                    updateTime(id);
+                    updateDesc(id, name, plateNumber, _km);
+                    Log.i("TIME", "TIME: UPDATED");
+                    notifyDataSetChanged();
+                }else {
+                    Toast.makeText(context, "Kilometer exceed maximum number", Toast.LENGTH_LONG).show();
+                    kilometerAlertDialog(id, name, plateNumber);
+                }
             } });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override

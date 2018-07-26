@@ -147,4 +147,14 @@ public class MyDBHandler  extends SQLiteOpenHelper {
         contentValues.put(COLUMN_DESCRIPTION, desc);
         sqLiteDatabase.update(TABLE_NAMELISTS, contentValues, COLUMN_ID + "=\"" + id + "\"", null);
     }
+
+    public boolean checkForExistance(String name, int phone){
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAMELISTS + " WHERE " + COLUMN_CONTACTNAME + "=\"" + name + "\"" +
+                " AND " + COLUMN_CONTACTPHONE + "=\"" + phone + "\";", null);
+        if (cursor.getCount() <= 0){
+            return false;
+        }
+        return true;
+    }
 }
