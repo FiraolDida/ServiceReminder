@@ -45,6 +45,7 @@ public class BackgroundService extends Service{
             Calendar calendar = Calendar.getInstance();
             String name, desc;
             int phone;
+            int phone2;
 
             int day = calendar.get(Calendar.DAY_OF_MONTH);
             Log.i("Today's DAY", "run: " + day);
@@ -61,8 +62,10 @@ public class BackgroundService extends Service{
                     name = cursor.getString(1);
                     phone = cursor.getInt(2);
                     desc = cursor.getString(3);
+                    phone2 = cursor.getInt(9);
+                    Log.i("phone2", "run: " + phone2);
 
-                    sendMessage(phone, name, desc);
+                    sendMessage(phone, name, desc, phone2);
                 }
             }
 
@@ -71,11 +74,21 @@ public class BackgroundService extends Service{
         }
     };
 
-    public void sendMessage(int phone, String name, String desc){
+    public void sendMessage(int phone, String name, String desc, int phone2){
         SmsManager smsManager = SmsManager.getDefault();
-        String _phone = "0"+phone;
-        smsManager.sendTextMessage(_phone, null, desc, null, null);
-        Log.i("SEND_TEST", "sendMessage: " + _phone + ", " + desc);
+        String _phone = "0" + phone;
+        String _phone2 = "0" + phone2;
+
+        if (_phone2.equals("00")){
+            smsManager.sendTextMessage(_phone, null, desc, null, null);
+            Log.i("SEND_TEST", "sendMessage: " + _phone + ", " + desc);
+        }else {
+            smsManager.sendTextMessage(_phone, null, desc, null, null);
+            smsManager.sendTextMessage(_phone2, null, desc, null, null);
+            Log.i("SEND_TEST", "sendMessage: " + _phone + " | " + _phone2 + ", " + desc);
+        }
+
+
         setFlagRecord(name);
     }
 

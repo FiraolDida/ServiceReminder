@@ -1,47 +1,48 @@
 package com.gamecodeschool.garagepractice;
 
 import android.database.Cursor;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ListAdapter;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class NameList extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener{
+public class WaitingListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    private RecyclerView recyclerView;
-    private TextView emptyText2;
+    private RecyclerView recyclerView2;
+    private TextView emptyText;
     public RecyclerView.Adapter adapter;
     private List<String> listItems;
     private MyDBHandler myDBHandler;
     public SwipeRefreshLayout swipeRefreshLayout;
+    private View waitingListFragment;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_name_list);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        waitingListFragment = inflater.inflate(R.layout.fragment_waiting_list, container, false);
 
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        emptyText2 = (TextView) findViewById(R.id.emptyText2);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        recyclerView2 = (RecyclerView) waitingListFragment.findViewById(R.id.recyclerView2);
+        emptyText = (TextView) waitingListFragment.findViewById(R.id.emptyText);
+        recyclerView2.setHasFixedSize(true);
+        recyclerView2.setLayoutManager(new LinearLayoutManager(getContext()));
+        swipeRefreshLayout = (SwipeRefreshLayout) waitingListFragment.findViewById(R.id.activity_name_list);
         swipeRefreshLayout.setOnRefreshListener(this);
 
         getData();
         adapter.notifyDataSetChanged();
+
+        return waitingListFragment;
     }
 
     public void getData(){
@@ -54,51 +55,42 @@ public class NameList extends AppCompatActivity implements SwipeRefreshLayout.On
     }
 
     public void populate(){
-
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        //emptyText = (TextView) findViewById(R.id.emptyText);
-        myDBHandler = new MyDBHandler(this);
+        myDBHandler = new MyDBHandler(getContext());
 
         ArrayList<ListItem> arrayList = new ArrayList<ListItem>();
         listItems = new ArrayList<>();
-        Cursor cursor = myDBHandler.getAllRows();
-
-        long start = 0, finish = 0;
+        Cursor cursor = myDBHandler.getFlagInfo();
 
         if(cursor.getCount() == 0){
-            Toast.makeText(this, "The database is empty " , Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "The database is empty " , Toast.LENGTH_LONG).show();
         }else {
 
             while(cursor.moveToNext()){
                 ListItem listItem = new ListItem();
                 listItem.set_nameList(cursor.getString(1));
+                //listItem.set_phone("Phone: "+(cursor.getString(2)));
                 listItem.set_phone(cursor.getInt(2));
                 listItem.set_desc(cursor.getString(3));
                 listItem.set_date(Integer.parseInt(cursor.getString(4)));
-                Log.d("Populate", "populate: " + cursor.getString(3));
                 listItem.set_month(cursor.getInt(5));
                 listItem.set_km(cursor.getInt(6));
                 listItem.set_plateNumber(cursor.getString(7));
-                listItem.set_phone2(cursor.getInt(9));
                 arrayList.add(listItem);
             }
-
-            emptyText2.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
+            emptyText.setVisibility(View.GONE);
+            recyclerView2.setVisibility(View.VISIBLE);
         }
 
 
 
-        adapter = new MyAdapter(this , arrayList);
-        recyclerView.setAdapter(adapter);
+        adapter = new MyAdapter2(getContext() , arrayList);
+        recyclerView2.setAdapter(adapter);
         swipeRefreshLayout.setRefreshing(false);
         adapter.notifyDataSetChanged();
-
     }
-
     @Override
     public void onRefresh() {
-        Log.d("NameList", "On swipe refresh called.");
+        Log.d("WaitingList", "On swipe refresh called.");
         getData();
     }
 }

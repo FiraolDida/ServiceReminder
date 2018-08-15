@@ -5,7 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
+import android.util.Log;
 
+import java.io.File;
 import java.util.Date;
 
 /**
@@ -13,29 +16,29 @@ import java.util.Date;
  */
 
 public class MyDBHandler  extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
     private static final String DATABASE_NAME = "GarageNameList.db";
     private static final String TABLE_NAMELISTS = "namelists";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_CONTACTNAME = "contactname";
     private static final String COLUMN_CONTACTPHONE = "contactphone";
+    private static final String COLUMN_CONTACTPHONE2 = "contactphone2";
     private static final String COLUMN_DESCRIPTION = "description";
     private static final String COLUMN_FINISHDATE = "finishdate";
     private static final String COLUMN_FINISHMONTH= "finishmonth";
     private static final String COLUMN_KILOMETER= "kilometer";
     private static final String COLUMN_PLATENUMBER= "platenumber";
     private static final String COLUMN_FLAG= "flag";
+    private static final String DATABASE_ALTER_CONTACTPHONE2 = "ALTER TABLE " + TABLE_NAMELISTS + " ADD " + COLUMN_CONTACTPHONE2 + " INTEGER;";
 
     public MyDBHandler(Context context){
-        super( context, DATABASE_NAME, null, 1);
-    }
-
-    public MyDBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, factory, version);
+        super( context, DATABASE_NAME, null, DATABASE_VERSION);
+        Log.i("MyDBhandler", "MyDBHandler: ");
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        Log.i("onCreate", "onCreate: ");
         String query = "CREATE TABLE " + TABLE_NAMELISTS + "(" +
                 COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_CONTACTNAME + " TEXT, " +
@@ -45,16 +48,21 @@ public class MyDBHandler  extends SQLiteOpenHelper {
                 COLUMN_FINISHMONTH + " INTEGER, " +
                 COLUMN_KILOMETER + " INTEGER, " +
                 COLUMN_PLATENUMBER + " TEXT, " +
-                COLUMN_FLAG + " INTEGER " +
+                COLUMN_FLAG + " INTEGER, " +
+                COLUMN_CONTACTPHONE2 + " INTEGER " +
                 ");";
 
         sqLiteDatabase.execSQL(query);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAMELISTS);
-        onCreate(sqLiteDatabase);
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+        Log.i("TEST", "onUpgrade: working");
+        if (newVersion > oldVersion) {
+            Log.i("IN IF", "onUpgrade: IF CASE");
+            sqLiteDatabase.execSQL(DATABASE_ALTER_CONTACTPHONE2);
+            Log.i("AFTER ALTER", "onUpgrade: ALTER");
+        }
     }
 
     public boolean addData(String name, int phone, String desc, int finish, int f_month, int km, String plateNumber){
@@ -77,6 +85,29 @@ public class MyDBHandler  extends SQLiteOpenHelper {
             return true;
         }
     }
+
+    public boolean addData(String name, int phone, int phone2, String desc, int finish, int f_month, int km, String plateNumber){
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_CONTACTNAME, name);
+        contentValues.put(COLUMN_CONTACTPHONE, phone);
+        contentValues.put(COLUMN_DESCRIPTION, desc);
+        contentValues.put(COLUMN_FINISHDATE, finish);
+        contentValues.put(COLUMN_FINISHMONTH, f_month);
+        contentValues.put(COLUMN_KILOMETER, km);
+        contentValues.put(COLUMN_PLATENUMBER, plateNumber);
+        contentValues.put(COLUMN_FLAG, 1);
+        contentValues.put(COLUMN_CONTACTPHONE2, phone2);
+
+        long result = sqLiteDatabase.insert(TABLE_NAMELISTS, null, contentValues);
+
+        if (result == -1){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
 
     public void deleteName(int id){
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
@@ -148,6 +179,15 @@ public class MyDBHandler  extends SQLiteOpenHelper {
         sqLiteDatabase.update(TABLE_NAMELISTS, contentValues, COLUMN_ID + "=\"" + id + "\"", null);
     }
 
+    public boolean checkForExistance(String name, int phone, int phone2){
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAMELISTS + " WHERE " + COLUMN_CONTACTNAME + "=\"" + name + "\"" +
+                " AND " + COLUMN_CONTACTPHONE + "=\"" + phone + "\"" + " AND " + COLUMN_CONTACTPHONE2 + "=\"" + phone2 + "\";", null);
+        if (cursor.getCount() <= 0){
+            return false;
+        }
+        return true;
+    }
     public boolean checkForExistance(String name, int phone){
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAMELISTS + " WHERE " + COLUMN_CONTACTNAME + "=\"" + name + "\"" +
