@@ -57,6 +57,7 @@ public class MyAdapter2 extends RecyclerView.Adapter<MyAdapter2.ViewHolder> {
             holder.textViewDate2.setText("Date: NULL/NULL");
         }
         else {
+            Log.i("My adapter 2", "on ELSE ");
             holder.textViewHead2.setText(listItem.get_nameList());
             holder.textViewPhone2.setText("Phone: " + phone + " | " + phone2);
             holder.textViewDesc2.setText(listItem.get_desc());

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.SystemClock;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
@@ -23,6 +24,10 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.channels.FileChannel;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -52,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
         plateNumber = (EditText) findViewById(R.id.plateNumber);
         relativeLayout = (RelativeLayout) findViewById(R.id.activity_main);
         myDBHandler = new MyDBHandler(this);
-
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -149,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void handleAdd(View v){
+        copyFile();
         String name = contactName.getText().toString();
         String p_Number = plateNumber.getText().toString();
         int phone = 0;
@@ -247,6 +252,42 @@ public class MainActivity extends AppCompatActivity {
             AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);
             Toast.makeText(this, "Alarm scheduled ", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void copyFile()
+    {
+        Log.i("CopyFile", "copyFile: before try");
+        try
+        {
+            File sd = Environment.getExternalStorageDirectory();
+            File data = Environment.getDataDirectory();
+
+            if (sd.canWrite())
+            {
+                String currentDBPath = "/data/com.gamecodeschool.garagepractice/databases/GarageNameList.db";
+                String backupDBPath = "GarageNameList";
+                File currentDB = new File(data, currentDBPath);
+                File backupDB = new File(sd, backupDBPath);
+                Log.i("CopyFile", "copyFile: in sd scan" + sd);
+
+                if (currentDB.exists()) {
+                    Log.i("CopyFile", "copyFile: current DB");
+                    FileChannel src = new FileInputStream(currentDB).getChannel();
+                    FileChannel dst = new FileOutputStream(backupDB).getChannel();
+                    dst.transferFrom(src, 0, src.size());
+                    src.close();
+                    dst.close();
+                    Toast.makeText(this, "Backup Complete", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(this, "Couldn't backup", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+        catch (Exception e) {
+            Log.w("Settings Backup", e);
+            e.printStackTrace();
         }
     }
 }

@@ -69,6 +69,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
             holder.textViewDate.setText("Date: "+listItem.get_date() + "/" + listItem.get_month());
         }
         else {
+            Log.i("My adapter", "waiting list ELSE");
             holder.textViewHead.setText(listItem.get_nameList());
             holder.textViewPhone.setText("Phone: " +phone + " | " + phone2);
             holder.textViewDesc.setText(listItem.get_desc());

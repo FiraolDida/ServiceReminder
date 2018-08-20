@@ -3,7 +3,11 @@
     package="com.gamecodeschool.garagepractice">
 
     <uses-permission android:name="android.permission.SEND_SMS" />
+<!--<<<<<<< Updated upstream-->
     <uses-permission android:name ="android.permission.WRITE_EXTERNAL_STORAGE" />
+=======
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+>>>>>>> Stashed changes
 
     <application
         android:allowBackup="true"
