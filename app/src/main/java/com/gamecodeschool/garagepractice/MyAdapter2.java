@@ -47,12 +47,24 @@ public class MyAdapter2 extends RecyclerView.Adapter<MyAdapter2.ViewHolder> {
     @Override
     public void onBindViewHolder(MyAdapter2.ViewHolder holder, final int position) {
         final ListItem listItem = listItems.get(position);
-        String phone = "0"+String.valueOf(listItem.get_phone());
+        String phone = "0" + String.valueOf(listItem.get_phone());
+        String phone2 = "0" + String.valueOf(listItem.get_phone2());
 
-        holder.textViewHead2.setText(listItem.get_nameList());
-        holder.textViewPhone2.setText("Phone: " + phone);
-        holder.textViewDesc2.setText(listItem.get_desc());
-        holder.textViewDate2.setText("Date: NULL/NULL");
+        if (phone2.equals("00")){
+            holder.textViewHead2.setText(listItem.get_nameList());
+            holder.textViewPhone2.setText("Phone: " + phone);
+            holder.textViewDesc2.setText(listItem.get_desc());
+            holder.textViewDate2.setText("Date: NULL/NULL");
+        }
+        else {
+            Log.i("My adapter 2", "on ELSE ");
+            holder.textViewHead2.setText(listItem.get_nameList());
+            holder.textViewPhone2.setText("Phone: " + phone + " | " + phone2);
+            holder.textViewDesc2.setText(listItem.get_desc());
+            holder.textViewDate2.setText("Date: NULL/NULL");
+        }
+
+
 
         holder.linearLayout2.setOnLongClickListener(new View.OnLongClickListener() {
             @Override

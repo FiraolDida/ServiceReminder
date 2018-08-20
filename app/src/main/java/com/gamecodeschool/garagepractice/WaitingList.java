@@ -69,6 +69,7 @@ public class WaitingList extends AppCompatActivity implements SwipeRefreshLayout
                 listItem.set_month(cursor.getInt(5));
                 listItem.set_km(cursor.getInt(6));
                 listItem.set_plateNumber(cursor.getString(7));
+                listItem.set_phone2(cursor.getInt(9));
                 arrayList.add(listItem);
             }
             emptyText.setVisibility(View.GONE);

@@ -57,12 +57,26 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final ListItem listItem = listItems.get(position);
-        String phone = "0"+String.valueOf(listItem.get_phone());
+        String phone = "0" + String.valueOf(listItem.get_phone());
+        String phone2 = "0" + String.valueOf(listItem.get_phone2());
+        Log.i("phone 2", "onBindViewHolder: " + phone2);
 
-        holder.textViewHead.setText(listItem.get_nameList());
-        holder.textViewPhone.setText("Phone: " +phone);
-        holder.textViewDesc.setText(listItem.get_desc());
-        holder.textViewDate.setText("Date: "+listItem.get_date() + "/" + listItem.get_month());
+        if (phone2.equals("00")){
+            Log.i("phone200", "onBindViewHolder: ");
+            holder.textViewHead.setText(listItem.get_nameList());
+            holder.textViewPhone.setText("Phone: " +phone);
+            holder.textViewDesc.setText(listItem.get_desc());
+            holder.textViewDate.setText("Date: "+listItem.get_date() + "/" + listItem.get_month());
+        }
+        else {
+            Log.i("My adapter", "waiting list ELSE");
+            holder.textViewHead.setText(listItem.get_nameList());
+            holder.textViewPhone.setText("Phone: " +phone + " | " + phone2);
+            holder.textViewDesc.setText(listItem.get_desc());
+            holder.textViewDate.setText("Date: "+listItem.get_date() + "/" + listItem.get_month());
+        }
+
+
 
         holder.linearLayout.setOnLongClickListener(new View.OnLongClickListener() {
             @Override

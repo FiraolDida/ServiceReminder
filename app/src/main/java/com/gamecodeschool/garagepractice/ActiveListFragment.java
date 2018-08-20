@@ -1,47 +1,47 @@
 package com.gamecodeschool.garagepractice;
 
 import android.database.Cursor;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ListAdapter;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class NameList extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener{
-
+public class ActiveListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private RecyclerView recyclerView;
     private TextView emptyText2;
     public RecyclerView.Adapter adapter;
     private List<String> listItems;
     private MyDBHandler myDBHandler;
+    private View activeListFragment;
     public SwipeRefreshLayout swipeRefreshLayout;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_name_list);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        activeListFragment = inflater.inflate(R.layout.fragment_active_list, container, false);
 
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        emptyText2 = (TextView) findViewById(R.id.emptyText2);
+        recyclerView = (RecyclerView) activeListFragment.findViewById(R.id.recyclerView);
+        emptyText2 = (TextView) activeListFragment.findViewById(R.id.emptyText2);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        swipeRefreshLayout = (SwipeRefreshLayout) activeListFragment.findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setOnRefreshListener(this);
 
         getData();
         adapter.notifyDataSetChanged();
+
+        return activeListFragment;
     }
 
     public void getData(){
@@ -55,9 +55,9 @@ public class NameList extends AppCompatActivity implements SwipeRefreshLayout.On
 
     public void populate(){
 
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView = (RecyclerView) activeListFragment.findViewById(R.id.recyclerView);
         //emptyText = (TextView) findViewById(R.id.emptyText);
-        myDBHandler = new MyDBHandler(this);
+        myDBHandler = new MyDBHandler(getContext());
 
         ArrayList<ListItem> arrayList = new ArrayList<ListItem>();
         listItems = new ArrayList<>();
@@ -66,7 +66,7 @@ public class NameList extends AppCompatActivity implements SwipeRefreshLayout.On
         long start = 0, finish = 0;
 
         if(cursor.getCount() == 0){
-            Toast.makeText(this, "The database is empty " , Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "The database is empty " , Toast.LENGTH_LONG).show();
         }else {
 
             while(cursor.moveToNext()){
@@ -89,7 +89,7 @@ public class NameList extends AppCompatActivity implements SwipeRefreshLayout.On
 
 
 
-        adapter = new MyAdapter(this , arrayList);
+        adapter = new MyAdapter(getContext() , arrayList);
         recyclerView.setAdapter(adapter);
         swipeRefreshLayout.setRefreshing(false);
         adapter.notifyDataSetChanged();

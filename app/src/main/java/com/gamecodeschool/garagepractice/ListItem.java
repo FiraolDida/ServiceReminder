@@ -8,6 +8,7 @@ public class ListItem {
     private int _id;
     private String _nameList;
     private int _phone;
+    private int _phone2;
     private String _desc;
     private int _date;
     private int _month;
@@ -17,7 +18,7 @@ public class ListItem {
     public ListItem() {
     }
 
-    public ListItem(int _id, String _nameList, int _phone, String _desc, int _date, int _month, int _km, String _plateNumber) {
+    public ListItem(int _id, String _nameList, int _phone, String _desc, int _date, int _month, int _km, String _plateNumber, int _phone2) {
         this._id = _id;
         this._nameList = _nameList;
         this._phone = _phone;
@@ -26,6 +27,7 @@ public class ListItem {
         this._month = _month;
         this._km = _km;
         this._plateNumber = _plateNumber;
+        this._phone2 = _phone2;
     }
 
     public int get_id() {
@@ -50,6 +52,14 @@ public class ListItem {
 
     public void set_phone(int _phone) {
         this._phone = _phone;
+    }
+
+    public int get_phone2() {
+        return _phone2;
+    }
+
+    public void set_phone2(int _phone2) {
+        this._phone2 = _phone2;
     }
 
     public String get_desc() {
